@@ -13,7 +13,7 @@ public class Employee {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	
-	private long id;
+	private Long id;
 	private String name;
 	private String email;
     private String department;
@@ -39,6 +39,10 @@ public class Employee {
 	public String getDepartment() {
 		return department;
 	}
+	
+	public Employee() {
+	}
+	
 	public Employee(String name, String email, String department, Double salary) {
 		super();
 		this.name = name;
