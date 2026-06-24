@@ -11,8 +11,11 @@ import com.model.Employee;
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
 	
-	@Autowired
-	EmployeeRepository employeeRepository;
+	private final EmployeeRepository employeeRepository;
+
+	public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+	    this.employeeRepository = employeeRepository;
+	}
 
 	@Override
 	public void save(Employee employee) {
@@ -22,7 +25,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 	
 	@Override
-	public Employee findById(long id) {
+	public Employee findById(Long id) {
 
 	    return employeeRepository.findById(id)
 	            .orElse(null);
@@ -42,15 +45,23 @@ public class EmployeeServiceImpl implements EmployeeService{
 		return employeeRepository.findAll();
 	}
 
-	/*
+	
 	@Override
 	public void update(Employee employee) {
 		// TODO Auto-generated method stub
 		employeeRepository.save(employee);
 	}
 
-	
-	
-*/
+	@Override
+	public Employee findByEmail(String email) {
+		// TODO Auto-generated method stub
+		return employeeRepository.findByEmail(email);
+	}
+
+	@Override
+	public List<Employee> findByDepartment(String department) {
+		// TODO Auto-generated method stub
+		return employeeRepository.findByDepartment(department);
+	}
 
 }

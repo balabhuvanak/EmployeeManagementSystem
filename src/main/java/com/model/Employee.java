@@ -1,5 +1,6 @@
 package com.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,13 +16,14 @@ public class Employee {
 	
 	private Long id;
 	private String name;
+	@Column(unique=true)
 	private String email;
     private String department;
     private Double salary;
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -44,14 +46,12 @@ public class Employee {
 	}
 	
 	public Employee(String name, String email, String department, Double salary) {
-		super();
 		this.name = name;
 		this.email = email;
 		this.department = department;
 		this.salary = salary;
 	}
 	public Employee(long id, String name, String email, String department, Double salary) {
-		super();
 		this.id = id;
 		this.name = name;
 		this.email = email;

@@ -1,8 +1,6 @@
 package com.controller;
 
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,10 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.dao.EmployeeRepository;
 import com.model.Employee;
 import com.service.EmployeeService;
 
@@ -35,8 +30,20 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/{id}")
-	public Employee getEmployee(@PathVariable Long id) {
+	public Employee getEmployeeById(@PathVariable Long id) {
 	    return employeeService.findById(id);
+
+	}
+	
+	@GetMapping("/email/{email}")
+	public Employee getEmployeeByEmail(@PathVariable String email) {
+	    return employeeService.findByEmail(email);
+
+	}
+	
+	@GetMapping("/department/{department}")
+	public List<Employee> getEmployeesByDepartment(@PathVariable String department) {
+	    return employeeService.findByDepartment(department);
 
 	}
 	
@@ -51,12 +58,18 @@ public class EmployeeController {
 		return employeeService.findAll();
 		
 	}	
-	/*
-	@PutMapping("/update")
-	public String updateEmployee(Employee employee) {
-		employeeService.update(employee);
-		return null;		
-	}	
-	*/
+	
+	@PutMapping("/{id}")
+	public String updateEmployee(
+	        @PathVariable Long id,
+	        @RequestBody Employee employee) {
+
+	    employee.setId(id);
+
+	    employeeService.update(employee);
+
+	    return "Employee updated successfully";
+	}
+	
 
 }
