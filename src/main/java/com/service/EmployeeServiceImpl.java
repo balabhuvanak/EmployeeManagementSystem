@@ -20,7 +20,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 	@Override
 	public void save(Employee employee) {
 		// TODO Auto-generated method stub
-	
+	if(employeeRepository.existsByEmail(employee.getEmail())) {
+		throw new RuntimeException("Email already exists");
+	}
 			employeeRepository.save(employee);
 	}
 	
