@@ -2,22 +2,23 @@ package com.service;
 
 import java.util.List;
 
-import com.model.Employee;
+import com.dto.EmployeeRequestDto;
+import com.dto.EmployeeResponseDto;
 
 public interface EmployeeService {
 
-	void save(Employee employee);
-	
-	Employee findById(Long id);
+    EmployeeResponseDto save(EmployeeRequestDto dto);
 
-	void delete(Long id);
+    EmployeeResponseDto findById(Long id);
 
-	List<Employee> findAll();
-	
-	void update(Employee employee);
+    EmployeeResponseDto findByEmail(String email);
 
-	Employee findByEmail(String email);
-	
-	List<Employee> findByDepartment(String department);
+    List<EmployeeResponseDto> findByDepartment(String department);
+
+    List<EmployeeResponseDto> findAll();
+
+    EmployeeResponseDto update(Long id, EmployeeRequestDto dto);
+
+    void delete(Long id);
 
 }

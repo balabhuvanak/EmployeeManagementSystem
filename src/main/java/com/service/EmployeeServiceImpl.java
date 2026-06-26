@@ -1,69 +1,123 @@
 package com.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dao.EmployeeRepository;
+import com.dto.EmployeeRequestDto;
+import com.dto.EmployeeResponseDto;
 import com.model.Employee;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService{
-	
-	private final EmployeeRepository employeeRepository;
+public class EmployeeServiceImpl implements EmployeeService {
 
-	public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
-	    this.employeeRepository = employeeRepository;
-	}
+    private final EmployeeRepository employeeRepository;
 
-	@Override
-	public void save(Employee employee) {
-		// TODO Auto-generated method stub
-	if(employeeRepository.existsByEmail(employee.getEmail())) {
-		throw new RuntimeException("Email already exists");
-	}
-			employeeRepository.save(employee);
-	}
-	
-	@Override
-	public Employee findById(Long id) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
-	    return employeeRepository.findById(id)
-	            .orElse(null);
-	}
+    @Override
+    public EmployeeResponseDto save(EmployeeRequestDto dto) {
+
+        if (employeeRepository.existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        Employee employee = convertToEntity(dto);
+
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        return convertToResponseDto(savedEmployee);
+    }
+
+    @Override
+    public EmployeeResponseDto findById(Long id) {
+
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        return convertToResponseDto(employee);
+    }
+
+    @Override
+    public EmployeeResponseDto findByEmail(String email) {
+
+        Employee employee = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        return convertToResponseDto(employee);
+    }
+
+    @Override
+    public List<EmployeeResponseDto> findByDepartment(String department) {
+
+        List<Employee> employees = employeeRepository.findByDepartment(department);
+
+        return employees.stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EmployeeResponseDto> findAll() {
+
+        return employeeRepository.findAll()
+                .stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EmployeeResponseDto update(Long id, EmployeeRequestDto dto) {
+
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        employee.setName(dto.getName());
+        employee.setEmail(dto.getEmail());
+        employee.setDepartment(dto.getDepartment());
+        employee.setSalary(dto.getSalary());
+
+        Employee updatedEmployee = employeeRepository.save(employee);
+
+        return convertToResponseDto(updatedEmployee);
+    }
+
+    @Override
+    public void delete(Long id) {
+
+        if (!employeeRepository.existsById(id)) {
+            throw new RuntimeException("Employee not found");
+        }
+
+        employeeRepository.deleteById(id);
+    }
 
 
-	@Override
-	public void delete(Long id) {
-		// TODO Auto-generated method stub
-		employeeRepository.deleteById(id);
-	}
 
+    private Employee convertToEntity(EmployeeRequestDto dto) {
 
-	@Override
-	public List<Employee> findAll() {
-		// TODO Auto-generated method stub
-		return employeeRepository.findAll();
-	}
+        Employee employee = new Employee();
 
-	
-	@Override
-	public void update(Employee employee) {
-		// TODO Auto-generated method stub
-		employeeRepository.save(employee);
-	}
+        employee.setName(dto.getName());
+        employee.setEmail(dto.getEmail());
+        employee.setDepartment(dto.getDepartment());
+        employee.setSalary(dto.getSalary());
 
-	@Override
-	public Employee findByEmail(String email) {
-		// TODO Auto-generated method stub
-		return employeeRepository.findByEmail(email);
-	}
+        return employee;
+    }
 
-	@Override
-	public List<Employee> findByDepartment(String department) {
-		// TODO Auto-generated method stub
-		return employeeRepository.findByDepartment(department);
-	}
+    private EmployeeResponseDto convertToResponseDto(Employee employee) {
+
+        return new EmployeeResponseDto(
+                employee.getId(),
+                employee.getName(),
+                employee.getEmail(),
+                employee.getDepartment(),
+                employee.getSalary());
+    }
 
 }

@@ -34,5 +34,14 @@ public class EmployeeRequestDto {
 
 	 public EmployeeRequestDto() {
 	    }
+	 public EmployeeRequestDto(String name, String email, String department, Double salary) {
+		super();
+		this.name = name;
+		this.email = email;
+		this.department = department;
+		this.salary = salary;
+	 }
+	 
+	 
     
 }

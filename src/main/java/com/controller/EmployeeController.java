@@ -1,75 +1,60 @@
 package com.controller;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.model.Employee;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.dto.EmployeeRequestDto;
+import com.dto.EmployeeResponseDto;
 import com.service.EmployeeService;
 
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
 
-	private final EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
-	public EmployeeController(EmployeeService employeeService) {
-	    this.employeeService = employeeService;
-	}
-	
-	@PostMapping("/save")
-	public String saveEmployee(@RequestBody Employee employee) {	
-		employeeService.save(employee);
-		return "Employee saved successfully";
-		
-	}
-	
-	@GetMapping("/{id}")
-	public Employee getEmployeeById(@PathVariable Long id) {
-	    return employeeService.findById(id);
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
-	}
-	
-	@GetMapping("/email/{email}")
-	public Employee getEmployeeByEmail(@PathVariable String email) {
-	    return employeeService.findByEmail(email);
+    @PostMapping("/save")
+    public EmployeeResponseDto saveEmployee(@RequestBody EmployeeRequestDto dto) {
+        return employeeService.save(dto);
+    }
 
-	}
-	
-	@GetMapping("/department/{department}")
-	public List<Employee> getEmployeesByDepartment(@PathVariable String department) {
-	    return employeeService.findByDepartment(department);
+    @GetMapping("/{id}")
+    public EmployeeResponseDto getEmployeeById(@PathVariable Long id) {
+        return employeeService.findById(id);
+    }
 
-	}
-	
-	@DeleteMapping("/{id}")
-	public String deleteEmployee(@PathVariable Long id) {
-	    employeeService.delete(id);
-	    return "Employee deleted successfully";
-	}
-	
-	@GetMapping
-	public List<Employee> getAllEmployees() {
-		return employeeService.findAll();
-		
-	}	
-	
-	@PutMapping("/{id}")
-	public String updateEmployee(
-	        @PathVariable Long id,
-	        @RequestBody Employee employee) {
+    @GetMapping("/email/{email}")
+    public EmployeeResponseDto getEmployeeByEmail(@PathVariable String email) {
+        return employeeService.findByEmail(email);
+    }
 
-	    employee.setId(id);
+    @GetMapping("/department/{department}")
+    public List<EmployeeResponseDto> getEmployeesByDepartment(@PathVariable String department) {
+        return employeeService.findByDepartment(department);
+    }
 
-	    employeeService.update(employee);
+    @GetMapping
+    public List<EmployeeResponseDto> getAllEmployees() {
+        return employeeService.findAll();
+    }
 
-	    return "Employee updated successfully";
-	}
-	
+    @PutMapping("/{id}")
+    public EmployeeResponseDto updateEmployee(
+            @PathVariable Long id,
+            @RequestBody EmployeeRequestDto dto) {
+
+        return employeeService.update(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteEmployee(@PathVariable Long id) {
+        employeeService.delete(id);
+        return "Employee deleted successfully";
+    }
 
 }
