@@ -8,6 +8,8 @@ import com.dto.EmployeeRequestDto;
 import com.dto.EmployeeResponseDto;
 import com.service.EmployeeService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
@@ -19,7 +21,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/save")
-    public EmployeeResponseDto saveEmployee(@RequestBody EmployeeRequestDto dto) {
+    public EmployeeResponseDto saveEmployee(@Valid @RequestBody EmployeeRequestDto dto) {
         return employeeService.save(dto);
     }
 
