@@ -58,5 +58,20 @@ public class EmployeeController {
         employeeService.delete(id);
         return "Employee deleted successfully";
     }
+    
+    @GetMapping("/name/{name}")
+    public List<EmployeeResponseDto> getEmployeeByName(@PathVariable String name){
+    	return employeeService.findByName(name);
+    }
+    
+    @GetMapping("/department/{department}/salary/{salary}")
+    public List<EmployeeResponseDto> getEmployeeByDepartmentAndSalaryGreaterThan(@PathVariable String department,@PathVariable Double salary){
+    	return employeeService.findByDepartmentAndSalaryGreaterThan(department, salary);
+    }
+    
+    @GetMapping("/salary/{salary}")
+    public List<EmployeeResponseDto> getEmployeeBySalaryGreaterThan(@PathVariable Double salary){
+    	return employeeService.findBySalaryGreaterThan(salary);
+    }
 
 }

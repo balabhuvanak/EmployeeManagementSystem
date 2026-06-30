@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.dao.EmployeeRepository;
 import com.dto.EmployeeRequestDto;
 import com.dto.EmployeeResponseDto;
+import com.exception.DuplicateEmailException;
+import com.exception.EmployeeNotFoundException;
 import com.model.Employee;
 
 @Service
@@ -23,7 +25,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDto save(EmployeeRequestDto dto) {
 
         if (employeeRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new DuplicateEmailException("Email already exists");
         }
 
         Employee employee = convertToEntity(dto);
@@ -37,7 +39,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDto findById(Long id) {
 
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
         return convertToResponseDto(employee);
     }
@@ -46,7 +48,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDto findByEmail(String email) {
 
         Employee employee = employeeRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
         return convertToResponseDto(employee);
     }
@@ -74,7 +76,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDto update(Long id, EmployeeRequestDto dto) {
 
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
         employee.setName(dto.getName());
         employee.setEmail(dto.getEmail());
@@ -90,34 +92,75 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void delete(Long id) {
 
         if (!employeeRepository.existsById(id)) {
-            throw new RuntimeException("Employee not found");
+        	throw new EmployeeNotFoundException("Employee not found");
         }
 
         employeeRepository.deleteById(id);
     }
 
+	@Override
+	public List<EmployeeResponseDto> findByName(String name) {
 
+		List<Employee> employees = employeeRepository.findByName(name);
 
-    private Employee convertToEntity(EmployeeRequestDto dto) {
+		if (employees.isEmpty()) {
+		    throw new EmployeeNotFoundException("No employees found with name: " + name);
+		}
 
-        Employee employee = new Employee();
+		return employees.stream()
+		        .map(this::convertToResponseDto)
+		        .toList();
+	}
 
-        employee.setName(dto.getName());
-        employee.setEmail(dto.getEmail());
-        employee.setDepartment(dto.getDepartment());
-        employee.setSalary(dto.getSalary());
+	@Override
+	public List<EmployeeResponseDto> findBySalaryGreaterThan(Double salary) {
 
-        return employee;
-    }
+	    List<Employee> employees = employeeRepository.findBySalaryGreaterThan(salary);
+	    
+	    if (employees.isEmpty()) {
+		    throw new EmployeeNotFoundException("No employees found with salary greater than: " + salary);
+		}
 
-    private EmployeeResponseDto convertToResponseDto(Employee employee) {
+	    return employees.stream()
+	            .map(this::convertToResponseDto)
+	            .toList();
+	}
 
-        return new EmployeeResponseDto(
-                employee.getId(),
-                employee.getName(),
-                employee.getEmail(),
-                employee.getDepartment(),
-                employee.getSalary());
-    }
+	@Override
+	public List<EmployeeResponseDto> findByDepartmentAndSalaryGreaterThan(String department, Double salary) {
+
+	    List<Employee> employees =
+	            employeeRepository.findByDepartmentAndSalaryGreaterThan(department, salary);
+	    
+	    if (employees.isEmpty()) {
+		    throw new EmployeeNotFoundException("No employees found with salary and department: " + salary+" , "+department);
+		}
+
+	    return employees.stream()
+	            .map(this::convertToResponseDto)
+	            .toList();
+	}
+	
+	 private Employee convertToEntity(EmployeeRequestDto dto) {
+
+	        Employee employee = new Employee();
+
+	        employee.setName(dto.getName());
+	        employee.setEmail(dto.getEmail());
+	        employee.setDepartment(dto.getDepartment());
+	        employee.setSalary(dto.getSalary());
+
+	        return employee;
+	    }
+
+	    private EmployeeResponseDto convertToResponseDto(Employee employee) {
+
+	        return new EmployeeResponseDto(
+	                employee.getId(),
+	                employee.getName(),
+	                employee.getEmail(),
+	                employee.getDepartment(),
+	                employee.getSalary());
+	    }
 
 }
