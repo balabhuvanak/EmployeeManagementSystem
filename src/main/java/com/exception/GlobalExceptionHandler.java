@@ -16,6 +16,14 @@ public class GlobalExceptionHandler {
 		
 	}
 	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<String> handleDepartmentNotFound(Exception ex){
+		return ResponseEntity
+				.status(HttpStatus.NOT_FOUND)
+				.body(ex.getMessage());
+		
+	}
+	
 	@ExceptionHandler(DuplicateEmailException.class)
 	public ResponseEntity<String> handleDuplicateEmail(DuplicateEmailException ex){
 		return ResponseEntity
@@ -30,5 +38,6 @@ public class GlobalExceptionHandler {
 	            .status(HttpStatus.INTERNAL_SERVER_ERROR)
 	            .body("Something went wrong");
 	}
+	
 
 }

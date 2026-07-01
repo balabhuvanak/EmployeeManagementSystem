@@ -5,20 +5,25 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.dao.DepartmentRepository;
 import com.dao.EmployeeRepository;
 import com.dto.EmployeeRequestDto;
 import com.dto.EmployeeResponseDto;
+import com.exception.DepartmentNotFoundException;
 import com.exception.DuplicateEmailException;
 import com.exception.EmployeeNotFoundException;
+import com.model.Department;
 import com.model.Employee;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository,DepartmentRepository departmentRepository) {
         this.employeeRepository = employeeRepository;
+		this.departmentRepository =departmentRepository;
     }
 
     @Override
@@ -54,9 +59,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeResponseDto> findByDepartment(String department) {
+    public List<EmployeeResponseDto> findByDepartment(String departmentName) {
 
-        List<Employee> employees = employeeRepository.findByDepartment(department);
+        List<Employee> employees = employeeRepository.findByDepartment_Name(departmentName);
 
         return employees.stream()
                 .map(this::convertToResponseDto)
@@ -80,7 +85,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employee.setName(dto.getName());
         employee.setEmail(dto.getEmail());
-        employee.setDepartment(dto.getDepartment());
+        
+        Department department= departmentRepository.findById(dto.getDepartmentId()).orElseThrow(()-> new EmployeeNotFoundException("Employee not found"));
+        employee.setDepartment(department);
         employee.setSalary(dto.getSalary());
 
         Employee updatedEmployee = employeeRepository.save(employee);
@@ -130,7 +137,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public List<EmployeeResponseDto> findByDepartmentAndSalaryGreaterThan(String department, Double salary) {
 
 	    List<Employee> employees =
-	            employeeRepository.findByDepartmentAndSalaryGreaterThan(department, salary);
+	            employeeRepository.findByDepartment_NameAndSalaryGreaterThan(department, salary);
 	    
 	    if (employees.isEmpty()) {
 		    throw new EmployeeNotFoundException("No employees found with salary and department: " + salary+" , "+department);
@@ -147,20 +154,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	        employee.setName(dto.getName());
 	        employee.setEmail(dto.getEmail());
-	        employee.setDepartment(dto.getDepartment());
+	        Department department= departmentRepository.findById(dto.getDepartmentId()).orElseThrow(()-> new DepartmentNotFoundException("Department not found"));
+	        employee.setDepartment(department);
 	        employee.setSalary(dto.getSalary());
 
 	        return employee;
 	    }
 
-	    private EmployeeResponseDto convertToResponseDto(Employee employee) {
+	 private EmployeeResponseDto convertToResponseDto(Employee employee) {
 
-	        return new EmployeeResponseDto(
-	                employee.getId(),
-	                employee.getName(),
-	                employee.getEmail(),
-	                employee.getDepartment(),
-	                employee.getSalary());
-	    }
-
+		    return new EmployeeResponseDto(
+		            employee.getId(),
+		            employee.getName(),
+		            employee.getEmail(),
+		            employee.getSalary(),
+		            employee.getDepartment().getId(),
+		            employee.getDepartment().getName()
+		    );
+		}
 }

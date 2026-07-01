@@ -1,10 +1,13 @@
 package com.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,11 +27,12 @@ public class Employee {
 	@Email
 	@NotBlank
 	private String email;
-	@NotBlank
-    private String department;
 	@NotNull
 	@Positive
     private Double salary;
+	@ManyToOne
+	@JoinColumn(name = "department_id")
+	private Department department;
 	public Long getId() {
 		return id;
 	}
@@ -47,36 +51,40 @@ public class Employee {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getDepartment() {
-		return department;
-	}
-	
-	public Employee() {
-	}
-	
-	public Employee(String name, String email, String department, Double salary) {
-		this.name = name;
-		this.email = email;
-		this.department = department;
-		this.salary = salary;
-	}
-	public Employee(long id, String name, String email, String department, Double salary) {
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.department = department;
-		this.salary = salary;
-	}
-	public void setDepartment(String department) {
-		this.department = department;
-	}
 	public Double getSalary() {
 		return salary;
 	}
 	public void setSalary(Double salary) {
 		this.salary = salary;
 	}
-    
-    
+	public Department getDepartment() {
+		return department;
+	}
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+	public Employee(Long id, @NotBlank String name, @Email @NotBlank String email, @NotNull @Positive Double salary,
+			Department department) {
+		
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.salary = salary;
+		this.department = department;
+	}
+	public Employee(@NotBlank String name, @Email @NotBlank String email, @NotNull @Positive Double salary,
+			Department department) {
+		
+		this.name = name;
+		this.email = email;
+		this.salary = salary;
+		this.department = department;
+	}
+	public Employee() {
+		
+	}
+	
+	
+	
 
 }

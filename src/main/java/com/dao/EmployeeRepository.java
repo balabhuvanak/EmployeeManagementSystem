@@ -11,14 +11,16 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     Optional<Employee> findByEmail(String email);
 
-    List<Employee> findByDepartment(String department);
-
     boolean existsByEmail(String email);
-    
+
     List<Employee> findByName(String name);
 
     List<Employee> findBySalaryGreaterThan(Double salary);
 
-    List<Employee> findByDepartmentAndSalaryGreaterThan(String department, Double salary);
+    List<Employee> findByDepartment_Name(String departmentName);
+
+    List<Employee> findByDepartment_NameAndSalaryGreaterThan(
+            String departmentName,
+            Double salary);
 
 }
